@@ -1,0 +1,12 @@
+{
+  "name": "nenido-todo",
+  "version": "1.0.0",
+  "description": "nenido todo app by nenifix.com",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
