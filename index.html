@@ -136,6 +136,14 @@
     letter-spacing: 0.3px;
   }
 
+  .meta .time {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.3px;
+    font-variant-numeric: tabular-nums;
+    margin-left: 8px;
+  }
+
   .meta .stats {
     display: flex;
     gap: 12px;
@@ -455,7 +463,7 @@
 
 <div class="container">
   <div class="meta">
-    <span class="date" id="date"></span>
+    <span class="date" id="date"></span> <span class="time" id="time"></span>
     <div class="stats">
       <span><em id="statActive">0</em> left</span>
       <span><em id="statDone">0</em> done</span>
@@ -498,6 +506,13 @@
   const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
   const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
   document.getElementById('date').textContent = days[today.getDay()] + ', ' + months[today.getMonth()] + ' ' + today.getDate();
+
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('time').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  updateTime();
+  setInterval(updateTime, 10000);
 
   const form = document.getElementById('todoForm');
   const input = document.getElementById('todoInput');
