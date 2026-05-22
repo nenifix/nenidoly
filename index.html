@@ -6,7 +6,7 @@
 <title>nenido</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -28,24 +28,22 @@
     --logo-text: #211E1E;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1A1818;
-      --surface: #2A2626;
-      --border: #4B4646;
-      --border-strong: #656363;
-      --text: #F1ECEC;
-      --text-secondary: #B7B1B1;
-      --text-tertiary: #656363;
-      --accent: #B7B1B1;
-      --accent-hover: #F1ECEC;
-      --checked: #4B4646;
-      --tag-bg: #211E1E;
-      --logo-light: #4B4646;
-      --logo-mid: #656363;
-      --logo-dark: #B7B1B1;
-      --logo-text: #F1ECEC;
-    }
+  html.dark {
+    --bg: #1A1818;
+    --surface: #2A2626;
+    --border: #4B4646;
+    --border-strong: #656363;
+    --text: #F1ECEC;
+    --text-secondary: #B7B1B1;
+    --text-tertiary: #656363;
+    --accent: #B7B1B1;
+    --accent-hover: #F1ECEC;
+    --checked: #4B4646;
+    --tag-bg: #211E1E;
+    --logo-light: #4B4646;
+    --logo-mid: #656363;
+    --logo-dark: #B7B1B1;
+    --logo-text: #F1ECEC;
   }
 
   body {
@@ -58,6 +56,7 @@
     align-items: center;
     padding: 56px 16px 32px;
     -webkit-font-smoothing: antialiased;
+    font-weight: 500;
   }
 
   .logo {
@@ -83,7 +82,7 @@
 
   .brand h1 {
     font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
-    font-weight: 300;
+    font-weight: 500;
     font-size: 28px;
     font-style: italic;
     color: var(--logo-text);
@@ -97,7 +96,26 @@
     letter-spacing: 2.5px;
     color: var(--text-tertiary);
     margin-top: 6px;
-    font-weight: 400;
+    font-weight: 500;
+  }
+
+  .theme-toggle {
+    margin-top: 16px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--border-strong);
   }
 
   .container {
@@ -172,6 +190,7 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: all 0.15s;
+    font-weight: 500;
   }
 
   .filter-btn + .filter-btn {
@@ -224,6 +243,7 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: all 0.15s;
+    font-weight: 500;
   }
 
   .todo-form button:hover {
@@ -314,6 +334,7 @@
     padding: 14px 0;
     transition: color 0.2s;
     line-height: 1.4;
+    font-weight: 500;
   }
 
   .todo-item.completed .todo-text {
@@ -334,6 +355,7 @@
     opacity: 0;
     transition: all 0.15s;
     flex-shrink: 0;
+    font-weight: 500;
   }
 
   .todo-item:hover .todo-delete {
@@ -391,6 +413,7 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     transition: color 0.15s;
+    font-weight: 500;
   }
 
   .clear-btn:hover {
@@ -427,6 +450,7 @@
   </div>
   <h1>nenido</h1>
   <div class="sub">developed by nenifix.com</div>
+  <button class="theme-toggle" id="themeToggle" aria-label="toggle theme"></button>
 </div>
 
 <div class="container">
@@ -463,6 +487,13 @@
 </div>
 
 <script>
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('nenido-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    html.classList.add('dark');
+  }
+
   const today = new Date();
   const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
   const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
@@ -477,6 +508,15 @@
   const statDone = document.getElementById('statDone');
   const progressFill = document.getElementById('progressFill');
   const filterBtns = document.querySelectorAll('.filter-btn');
+  const themeToggle = document.getElementById('themeToggle');
+
+  themeToggle.textContent = html.classList.contains('dark') ? '\u2600' : '\u263E';
+
+  themeToggle.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    themeToggle.textContent = html.classList.contains('dark') ? '\u2600' : '\u263E';
+    localStorage.setItem('nenido-theme', html.classList.contains('dark') ? 'dark' : 'light');
+  });
 
   let todos = JSON.parse(localStorage.getItem('todos') || '[]');
   let filter = 'all';
