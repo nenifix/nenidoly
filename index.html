@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>nenido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -11,109 +14,231 @@
     --bg: #F1ECEC;
     --surface: #FFFFFF;
     --border: #CFCECD;
+    --border-strong: #B7B1B1;
     --text: #211E1E;
     --text-secondary: #656363;
+    --text-tertiary: #B7B1B1;
     --accent: #4B4646;
     --accent-hover: #211E1E;
     --checked: #B7B1B1;
-    --input-bg: #F1ECEC;
+    --tag-bg: #F1ECEC;
+    --logo-light: #CFCECD;
+    --logo-mid: #B7B1B1;
+    --logo-dark: #4B4646;
+    --logo-text: #211E1E;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #211E1E;
+      --bg: #1A1818;
       --surface: #2A2626;
       --border: #4B4646;
+      --border-strong: #656363;
       --text: #F1ECEC;
       --text-secondary: #B7B1B1;
+      --text-tertiary: #656363;
       --accent: #B7B1B1;
       --accent-hover: #F1ECEC;
-      --checked: #656363;
-      --input-bg: #2A2626;
+      --checked: #4B4646;
+      --tag-bg: #211E1E;
+      --logo-light: #4B4646;
+      --logo-mid: #656363;
+      --logo-dark: #B7B1B1;
+      --logo-text: #F1ECEC;
     }
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, monospace;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 48px 16px;
+    padding: 56px 16px 32px;
+    -webkit-font-smoothing: antialiased;
   }
 
   .logo {
     display: flex;
-    gap: 4px;
-    margin-bottom: 40px;
+    gap: 3px;
+    margin-bottom: 12px;
+    opacity: 0.7;
   }
 
   .logo-block {
-    width: 12px;
-    height: 24px;
-    background: var(--accent);
+    width: 10px;
+    height: 20px;
+    border-radius: 1px;
   }
 
-  .logo-block.l { height: 36px; }
-  .logo-block.s { height: 16px; width: 8px; }
-  .logo-block.gap { background: transparent; width: 6px; }
-  .logo-block.dark { background: var(--text); }
+  .logo-block.l { height: 30px; }
+  .logo-block.gap { background: transparent; width: 5px; }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .brand h1 {
+    font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+    font-weight: 300;
+    font-size: 28px;
+    font-style: italic;
+    color: var(--logo-text);
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .brand .sub {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    font-weight: 400;
+  }
 
   .container {
     width: 100%;
     max-width: 480px;
   }
 
-  h1 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .meta .date {
+    font-size: 12px;
     color: var(--text-secondary);
+    letter-spacing: 0.3px;
+  }
+
+  .meta .stats {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .meta .stats span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .meta .stats em {
+    font-style: normal;
+    color: var(--text-secondary);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
     margin-bottom: 24px;
-    font-weight: 500;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    border-radius: 1px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .filter-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: var(--surface);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.15s;
+  }
+
+  .filter-btn + .filter-btn {
+    border-left: 1px solid var(--border);
+  }
+
+  .filter-btn:hover {
+    color: var(--text-secondary);
+  }
+
+  .filter-btn.active {
+    color: var(--text);
+    background: var(--tag-bg);
   }
 
   .todo-form {
     display: flex;
-    gap: 0;
-    margin-bottom: 32px;
-    border: 1px solid var(--border);
+    margin-bottom: 1px;
   }
 
   .todo-form input {
     flex: 1;
-    padding: 12px 16px;
-    border: none;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-right: none;
     background: var(--surface);
     color: var(--text);
     font-size: 14px;
     font-family: inherit;
     outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .todo-form input:focus {
+    border-color: var(--border-strong);
   }
 
   .todo-form input::placeholder {
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
   }
 
   .todo-form button {
-    padding: 12px 20px;
-    border: none;
-    border-left: 1px solid var(--border);
+    padding: 14px 20px;
+    border: 1px solid var(--border);
     background: var(--surface);
     color: var(--text-secondary);
-    font-size: 13px;
+    font-size: 11px;
     font-family: inherit;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     transition: all 0.15s;
   }
 
   .todo-form button:hover {
     background: var(--accent);
+    border-color: var(--accent);
     color: var(--bg);
+  }
+
+  .hint {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+    text-align: right;
   }
 
   .todo-list {
@@ -126,10 +251,11 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 0 16px;
+    min-height: 48px;
     border-bottom: 1px solid var(--border);
     font-size: 14px;
-    transition: background 0.1s;
+    transition: background 0.12s;
   }
 
   .todo-item:last-child {
@@ -137,18 +263,13 @@
   }
 
   .todo-item:hover {
-    background: var(--input-bg);
-  }
-
-  .todo-item.completed .todo-text {
-    text-decoration: line-through;
-    color: var(--checked);
+    background: var(--tag-bg);
   }
 
   .todo-checkbox {
-    width: 16px;
-    height: 16px;
-    border: 1px solid var(--border);
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border-strong);
     background: transparent;
     cursor: pointer;
     flex-shrink: 0;
@@ -156,38 +277,62 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .todo-checkbox:hover {
+    border-color: var(--accent);
   }
 
   .todo-checkbox:checked {
     background: var(--accent);
     border-color: var(--accent);
-    position: relative;
+  }
+
+  .todo-checkbox::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: var(--bg);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   }
 
   .todo-checkbox:checked::after {
-    content: '';
-    display: block;
-    width: 8px;
-    height: 8px;
-    background: var(--bg);
-    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    opacity: 1;
+    transform: scale(1);
   }
 
   .todo-text {
     flex: 1;
     cursor: pointer;
+    padding: 14px 0;
+    transition: color 0.2s;
+    line-height: 1.4;
+  }
+
+  .todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--checked);
   }
 
   .todo-delete {
-    width: 20px;
-    height: 20px;
+    padding: 4px 6px;
     border: none;
     background: transparent;
+    color: var(--text-tertiary);
+    font-size: 10px;
+    font-family: inherit;
     cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     opacity: 0;
-    transition: opacity 0.15s;
-    position: relative;
+    transition: all 0.15s;
     flex-shrink: 0;
   }
 
@@ -195,131 +340,182 @@
     opacity: 1;
   }
 
-  .todo-delete::before,
-  .todo-delete::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 12px;
-    height: 1px;
-    background: var(--text-secondary);
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-
-  .todo-delete::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-
-  .todo-delete:hover::before,
-  .todo-delete:hover::after {
-    background: var(--text);
+  .todo-delete:hover {
+    color: var(--text);
   }
 
   .empty-state {
-    padding: 32px 16px;
+    padding: 48px 24px;
     text-align: center;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     font-size: 13px;
     border: 1px solid var(--border);
     background: var(--surface);
   }
 
+  .empty-state .empty-hint {
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--text-tertiary);
+    opacity: 0.7;
+    letter-spacing: 0.3px;
+  }
+
   .footer {
-    margin-top: 32px;
+    margin-top: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-
-  .clear-btn {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-secondary);
-    padding: 6px 12px;
-    font-size: 11px;
-    font-family: inherit;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.15s;
-  }
-
-  .clear-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
   }
 
   .count {
-    letter-spacing: 0.5px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.3px;
+  }
+
+  .count em {
+    font-style: normal;
+    color: var(--text-secondary);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .clear-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    padding: 4px 0;
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: color 0.15s;
+  }
+
+  .clear-btn:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 400px) {
+    body { padding: 32px 12px 24px; }
+    .brand h1 { font-size: 24px; }
   }
 </style>
 </head>
 <body>
 
-<div class="logo">
-  <div class="logo-block l" style="background:#4B4646"></div>
-  <div class="logo-block" style="background:#B7B1B1"></div>
-  <div class="logo-block gap"></div>
-  <div class="logo-block l" style="background:#4B4646"></div>
-  <div class="logo-block dark"></div>
-  <div class="logo-block gap"></div>
-  <div class="logo-block" style="background:#B7B1B1"></div>
-  <div class="logo-block dark l"></div>
-  <div class="logo-block gap"></div>
-  <div class="logo-block l" style="background:#4B4646"></div>
-  <div class="logo-block dark"></div>
-  <div class="logo-block gap"></div>
-  <div class="logo-block l" style="background:#4B4646"></div>
-  <div class="logo-block" style="background:#B7B1B1"></div>
-  <div class="logo-block gap"></div>
-  <div class="logo-block" style="background:#B7B1B1"></div>
-  <div class="logo-block dark l"></div>
+<div class="brand">
+  <div class="logo">
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-light)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-light)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+  </div>
+  <h1>nenido</h1>
+  <div class="sub">developed by nenifix.com</div>
 </div>
 
 <div class="container">
-  <h1>nenido</h1>
-  <p style="font-size:11px; color:var(--text-secondary); letter-spacing:1px; text-transform:uppercase; margin-top:-16px; margin-bottom:24px;">developed by nenifix.com</p>
+  <div class="meta">
+    <span class="date" id="date"></span>
+    <div class="stats">
+      <span><em id="statActive">0</em> left</span>
+      <span><em id="statDone">0</em> done</span>
+    </div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">all</button>
+    <button class="filter-btn" data-filter="active">active</button>
+    <button class="filter-btn" data-filter="done">done</button>
+  </div>
 
   <form class="todo-form" id="todoForm">
-    <input type="text" id="todoInput" placeholder="add a task..." autofocus>
+    <input type="text" id="todoInput" placeholder="add a task" autocomplete="off">
     <button type="submit">add</button>
   </form>
+  <div class="hint">&#8997; enter to add</div>
 
   <ul class="todo-list" id="todoList"></ul>
 
   <div class="footer">
-    <span class="count" id="count">0 items</span>
-    <button class="clear-btn" id="clearBtn">clear</button>
+    <span class="count"><em id="count">0</em> tasks</span>
+    <button class="clear-btn" id="clearBtn">clear all</button>
   </div>
 </div>
 
 <script>
+  const today = new Date();
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  document.getElementById('date').textContent = days[today.getDay()] + ', ' + months[today.getMonth()] + ' ' + today.getDate();
+
   const form = document.getElementById('todoForm');
   const input = document.getElementById('todoInput');
   const list = document.getElementById('todoList');
   const count = document.getElementById('count');
   const clearBtn = document.getElementById('clearBtn');
+  const statActive = document.getElementById('statActive');
+  const statDone = document.getElementById('statDone');
+  const progressFill = document.getElementById('progressFill');
+  const filterBtns = document.querySelectorAll('.filter-btn');
 
   let todos = JSON.parse(localStorage.getItem('todos') || '[]');
+  let filter = 'all';
 
   function save() {
     localStorage.setItem('todos', JSON.stringify(todos));
   }
 
+  function filtered() {
+    if (filter === 'active') return todos.filter(t => !t.done);
+    if (filter === 'done') return todos.filter(t => t.done);
+    return todos;
+  }
+
   function render() {
     const active = todos.filter(t => !t.done).length;
-    count.textContent = active + ' item' + (active !== 1 ? 's' : '');
+    const done = todos.filter(t => t.done).length;
+    const total = todos.length;
 
-    if (todos.length === 0) {
-      list.innerHTML = '<li class="empty-state">no tasks yet</li>';
+    statActive.textContent = active;
+    statDone.textContent = done;
+    count.textContent = total;
+    progressFill.style.width = total ? (done / total * 100) + '%' : '0%';
+
+    if (total === 0) {
+      list.innerHTML = '<li class="empty-state">no tasks yet<div class="empty-hint">type above to get started</div></li>';
+      return;
+    }
+
+    const items = filtered();
+    if (items.length === 0) {
+      const msg = filter === 'active' ? 'all done' : filter === 'done' ? 'no completed tasks' : 'no tasks yet';
+      list.innerHTML = '<li class="empty-state">' + msg + '<div class="empty-hint">' + (filter === 'done' ? 'complete a task to see it here' : '') + '</div></li>';
       return;
     }
 
     list.innerHTML = '';
-    todos.forEach((todo, i) => {
+    items.forEach((todo) => {
+      const i = todos.indexOf(todo);
       const li = document.createElement('li');
       li.className = 'todo-item' + (todo.done ? ' completed' : '');
 
@@ -345,7 +541,7 @@
 
       const del = document.createElement('button');
       del.className = 'todo-delete';
-      del.setAttribute('aria-label', 'delete');
+      del.textContent = 'del';
       del.addEventListener('click', () => {
         todos.splice(i, 1);
         save();
@@ -377,8 +573,16 @@
     render();
   });
 
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filter = btn.dataset.filter;
+      render();
+    });
+  });
+
   render();
 </script>
-
 </body>
 </html>
