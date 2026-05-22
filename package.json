@@ -1,7 +1,7 @@
 {
-  "name": "nenido-todo",
+  "name": "nenidoly",
   "version": "1.0.0",
-  "description": "nenido todo app by nenifix.com",
+  "description": "nenido — a greyscale todo app with Supabase auth + PostgreSQL",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

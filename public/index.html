@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nenido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #F1ECEC;
+    --surface: #FFFFFF;
+    --border: #CFCECD;
+    --border-strong: #B7B1B1;
+    --text: #211E1E;
+    --text-secondary: #656363;
+    --text-tertiary: #B7B1B1;
+    --accent: #4B4646;
+    --accent-hover: #211E1E;
+    --checked: #B7B1B1;
+    --tag-bg: #F1ECEC;
+    --logo-light: #CFCECD;
+    --logo-mid: #B7B1B1;
+    --logo-dark: #4B4646;
+    --logo-text: #211E1E;
+  }
+
+  html.dark {
+    --bg: #1A1818;
+    --surface: #2A2626;
+    --border: #4B4646;
+    --border-strong: #656363;
+    --text: #F1ECEC;
+    --text-secondary: #B7B1B1;
+    --text-tertiary: #656363;
+    --accent: #B7B1B1;
+    --accent-hover: #F1ECEC;
+    --checked: #4B4646;
+    --tag-bg: #211E1E;
+    --logo-light: #4B4646;
+    --logo-mid: #656363;
+    --logo-dark: #B7B1B1;
+    --logo-text: #F1ECEC;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 56px 16px 32px;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 500;
+  }
+
+  .logo {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  .logo-block { width: 10px; height: 20px; border-radius: 1px; }
+  .logo-block.l { height: 30px; }
+  .logo-block.gap { background: transparent; width: 5px; }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .brand h1 {
+    font-family: 'Newsreader', Georgia, 'Times New Roman', serif;
+    font-weight: 500;
+    font-size: 28px;
+    font-style: italic;
+    color: var(--logo-text);
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .brand .sub {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .theme-toggle {
+    margin-top: 16px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .theme-toggle:hover { border-color: var(--border-strong); }
+
+  .container, .auth-box {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .auth-box {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    background: var(--surface);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .auth-tab + .auth-tab { border-left: 1px solid var(--border); }
+  .auth-tab:hover { color: var(--text-secondary); }
+  .auth-tab.active { color: var(--text); background: var(--tag-bg); }
+
+  .auth-form { display: flex; flex-direction: column; gap: 12px; }
+
+  .auth-form input {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .auth-form input:focus { border-color: var(--border-strong); }
+  .auth-form input::placeholder { color: var(--text-tertiary); }
+
+  .auth-form button {
+    padding: 12px 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .auth-form button:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  .auth-msg {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: 4px;
+    min-height: 18px;
+  }
+
+  .auth-msg.error { color: #B15A5A; }
+
+  .user-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .user-bar .email {
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+  }
+
+  .sign-out-btn {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-tertiary);
+    padding: 4px 10px;
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .sign-out-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+
+  .meta .date { font-size: 12px; color: var(--text-secondary); letter-spacing: 0.3px; }
+  .meta .time { font-size: 12px; color: var(--text-tertiary); letter-spacing: 0.3px; font-variant-numeric: tabular-nums; margin-left: 8px; }
+
+  .meta .stats {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .meta .stats span { display: flex; align-items: center; gap: 4px; }
+  .meta .stats em { font-style: normal; color: var(--text-secondary); font-variant-numeric:tabular-nums; }
+
+  .progress-track {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    border-radius: 1px;
+  }
+
+  .filters {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .filter-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: var(--surface);
+    color: var(--text-tertiary);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .filter-btn + .filter-btn { border-left: 1px solid var(--border); }
+  .filter-btn:hover { color: var(--text-secondary); }
+  .filter-btn.active { color: var(--text); background: var(--tag-bg); }
+
+  .todo-form {
+    display: flex;
+    margin-bottom: 1px;
+  }
+
+  .todo-form input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-right: none;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .todo-form input:focus { border-color: var(--border-strong); }
+  .todo-form input::placeholder { color: var(--text-tertiary); }
+
+  .todo-form button {
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .todo-form button:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  .hint {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+    text-align: right;
+  }
+
+  .todo-list {
+    list-style: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    transition: background 0.12s;
+  }
+
+  .todo-item:last-child { border-bottom: none; }
+  .todo-item:hover { background: var(--tag-bg); }
+
+  .todo-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .todo-checkbox:hover { border-color: var(--accent); }
+  .todo-checkbox:checked { background: var(--accent); border-color: var(--accent); }
+
+  .todo-checkbox::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: var(--bg);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
+
+  .todo-checkbox:checked::after { opacity: 1; transform: scale(1); }
+
+  .todo-text {
+    flex: 1;
+    cursor: pointer;
+    padding: 14px 0;
+    transition: color 0.2s;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--checked);
+  }
+
+  .todo-delete {
+    padding: 4px 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .todo-item:hover .todo-delete { opacity: 1; }
+  .todo-delete:hover { color: var(--text); }
+
+  .empty-state {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .empty-state .empty-hint {
+    font-size: 11px;
+    margin-top: 8px;
+    color: var(--text-tertiary);
+    opacity: 0.7;
+    letter-spacing: 0.3px;
+  }
+
+  .footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .count { font-size: 11px; color: var(--text-tertiary); letter-spacing: 0.3px; }
+  .count em { font-style: normal; color: var(--text-secondary); font-variant-numeric:tabular-nums; }
+
+  .clear-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    padding: 4px 0;
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: color 0.15s;
+    font-weight: 500;
+  }
+
+  .clear-btn:hover { color: var(--text); }
+
+  .loading {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 400px) {
+    body { padding: 32px 12px 24px; }
+    .brand h1 { font-size: 24px; }
+    .auth-box { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <div class="logo">
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-light)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-light)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block gap"></div>
+    <div class="logo-block" style="background:var(--logo-mid)"></div>
+    <div class="logo-block l" style="background:var(--logo-dark)"></div>
+  </div>
+  <h1>nenido</h1>
+  <div class="sub">developed by nenifix.com</div>
+  <button class="theme-toggle" id="themeToggle" aria-label="toggle theme"></button>
+</div>
+
+<div id="app"></div>
+
+<script>
+  const SUPABASE_URL = window.__SUPABASE_URL || 'https://dvkwljinagywttyhbdop.supabase.co';
+  const SUPABASE_ANON_KEY = window.__SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2a3dsamluYWd5d3R0eWhiZG9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTA5MzIsImV4cCI6MjA5NTAyNjkzMn0.fCEDU3RKxg0LW8wsJ2lJ0YgE6nnGe3Jv7wVErO0NFmE';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('nenido-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) html.classList.add('dark');
+
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.textContent = html.classList.contains('dark') ? '\u2600' : '\u263E';
+  themeToggle.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    themeToggle.textContent = html.classList.contains('dark') ? '\u2600' : '\u263E';
+    localStorage.setItem('nenido-theme', html.classList.contains('dark') ? 'dark' : 'light');
+  });
+
+  const today = new Date();
+  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const dateStr = days[today.getDay()] + ', ' + months[today.getMonth()] + ' ' + today.getDate();
+
+  const app = document.getElementById('app');
+  let todos = [];
+  let filter = 'all';
+  let currentUser = null;
+
+  /* ─── Auth UI ─── */
+  function renderAuth(tab) {
+    app.innerHTML =
+      '<div class="auth-box">' +
+        '<div class="auth-tabs">' +
+          '<button class="auth-tab' + (tab === 'signin' ? ' active' : '') + '" data-tab="signin">sign in</button>' +
+          '<button class="auth-tab' + (tab === 'signup' ? ' active' : '') + '" data-tab="signup">sign up</button>' +
+        '</div>' +
+        '<form class="auth-form" id="authForm">' +
+          '<input type="email" id="authEmail" placeholder="email" autocomplete="email">' +
+          '<input type="password" id="authPassword" placeholder="password" autocomplete="' + (tab === 'signin' ? 'current-password' : 'new-password') + '">' +
+          '<button type="submit">' + (tab === 'signin' ? 'sign in' : 'sign up') + '</button>' +
+        '</form>' +
+        '<div class="auth-msg" id="authMsg"></div>' +
+      '</div>';
+
+    document.querySelectorAll('.auth-tab').forEach(btn => {
+      btn.addEventListener('click', () => renderAuth(btn.dataset.tab));
+    });
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const msg = document.getElementById('authMsg');
+      msg.className = 'auth-msg';
+      msg.textContent = '';
+
+      if (!email || !password) { msg.textContent = 'fill in both fields'; msg.classList.add('error'); return; }
+      if (password.length < 6) { msg.textContent = 'password must be at least 6 characters'; msg.classList.add('error'); return; }
+
+      try {
+        let result;
+        if (tab === 'signin') {
+          result = await sb.auth.signInWithPassword({ email, password });
+        } else {
+          result = await sb.auth.signUp({ email, password });
+        }
+        if (result.error) { msg.textContent = result.error.message; msg.classList.add('error'); }
+      } catch (err) { msg.textContent = 'connection error'; msg.classList.add('error'); }
+    });
+  }
+
+  /* ─── Todo App ─── */
+  function renderTodoApp(user) {
+    app.innerHTML =
+      '<div class="container">' +
+        '<div class="user-bar">' +
+          '<span class="email">' + escapeHtml(user.email) + '</span>' +
+          '<button class="sign-out-btn" id="signOutBtn">sign out</button>' +
+        '</div>' +
+        '<div class="meta">' +
+          '<span><span class="date">' + dateStr + '</span> <span class="time" id="time"></span></span>' +
+          '<div class="stats">' +
+            '<span><em id="statActive">0</em> left</span>' +
+            '<span><em id="statDone">0</em> done</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>' +
+        '<div class="filters">' +
+          '<button class="filter-btn active" data-filter="all">all</button>' +
+          '<button class="filter-btn" data-filter="active">active</button>' +
+          '<button class="filter-btn" data-filter="done">done</button>' +
+        '</div>' +
+        '<form class="todo-form" id="todoForm">' +
+          '<input type="text" id="todoInput" placeholder="add a task" autocomplete="off">' +
+          '<button type="submit">add</button>' +
+        '</form>' +
+        '<div class="hint">&#8997; enter to add</div>' +
+        '<ul class="todo-list" id="todoList"></ul>' +
+        '<div class="footer">' +
+          '<span class="count"><em id="count">0</em> tasks</span>' +
+          '<button class="clear-btn" id="clearBtn">clear all</button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('signOutBtn').addEventListener('click', () => sb.auth.signOut());
+
+    const timeEl = document.getElementById('time');
+    function updateTime() {
+      timeEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    updateTime();
+    setInterval(updateTime, 10000);
+
+    const form = document.getElementById('todoForm');
+    const input = document.getElementById('todoInput');
+    const list = document.getElementById('todoList');
+    const count = document.getElementById('count');
+    const clearBtn = document.getElementById('clearBtn');
+    const statActive = document.getElementById('statActive');
+    const statDone = document.getElementById('statDone');
+    const progressFill = document.getElementById('progressFill');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filter = btn.dataset.filter;
+        renderList();
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      const { data, error } = await sb.from('todos').insert({ text, done: false }).select().single();
+      if (!error && data) { todos.push(data); renderList(); }
+      input.value = '';
+      input.focus();
+    });
+
+    clearBtn.addEventListener('click', async () => {
+      if (todos.length === 0) return;
+      await sb.from('todos').delete().eq('user_id', user.id);
+      todos = [];
+      renderList();
+    });
+
+    function renderList() {
+      const active = todos.filter(t => !t.done).length;
+      const done = todos.filter(t => t.done).length;
+      const total = todos.length;
+      statActive.textContent = active;
+      statDone.textContent = done;
+      count.textContent = total;
+      progressFill.style.width = total ? (done / total * 100) + '%' : '0%';
+
+      if (total === 0) {
+        list.innerHTML = '<li class="empty-state">no tasks yet<div class="empty-hint">type above to get started</div></li>';
+        return;
+      }
+
+      const items = filter === 'active' ? todos.filter(t => !t.done) : filter === 'done' ? todos.filter(t => t.done) : todos;
+      if (items.length === 0) {
+        const msg = filter === 'active' ? 'all done' : 'no completed tasks';
+        list.innerHTML = '<li class="empty-state">' + msg + '</li>';
+        return;
+      }
+
+      list.innerHTML = '';
+      items.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = 'todo-item' + (todo.done ? ' completed' : '');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.className = 'todo-checkbox'; cb.checked = todo.done;
+        cb.addEventListener('change', async () => {
+          await sb.from('todos').update({ done: cb.checked }).eq('id', todo.id);
+          todo.done = cb.checked; renderList();
+        });
+        const span = document.createElement('span'); span.className = 'todo-text';
+        span.textContent = todo.text;
+        span.addEventListener('click', () => { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); });
+        const del = document.createElement('button'); del.className = 'todo-delete'; del.textContent = 'del';
+        del.addEventListener('click', async () => {
+          await sb.from('todos').delete().eq('id', todo.id);
+          todos = todos.filter(t => t.id !== todo.id); renderList();
+        });
+        li.appendChild(cb); li.appendChild(span); li.appendChild(del);
+        list.appendChild(li);
+      });
+    }
+
+    loadTodos(user, renderList);
+  }
+
+  function loadTodos(user, cb) {
+    app.innerHTML = '<div class="loading">loading</div>';
+    sb.from('todos').select('*').eq('user_id', user.id).order('created_at', { ascending: true }).then(({ data, error }) => {
+      if (!error && data) todos = data;
+      cb();
+    });
+  }
+
+  function escapeHtml(s) {
+    const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+  }
+
+  /* ─── Auth State ─── */
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      currentUser = session.user;
+      renderTodoApp(currentUser);
+    } else {
+      currentUser = null;
+      renderAuth('signin');
+    }
+  });
+
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      currentUser = data.session.user;
+      renderTodoApp(currentUser);
+    } else {
+      renderAuth('signin');
+    }
+  });
+</script>
+</body>
+</html>
